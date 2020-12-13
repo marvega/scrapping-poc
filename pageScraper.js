@@ -30,15 +30,52 @@ const scraperObject = {
                 await page.goto(url);
                 await page.waitForSelector('.contenedor-calugas');
 
-                let name = await page.$eval('.ficha_titulos > h1', (titulo) => {
-                    console.log(titulo);
-                    titulo = titulo.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "");
-                    console.log(titulo);
-                    return titulo;
+
+
+                let sku = await page.$eval('.ficha_titulos > p > span', (s) => {
+                    if (!s) return 0;
+                    s = s.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "");
+                    return s;
                 });
 
 
 
+                let name = await page.$eval('.ficha_titulos > h1', (s) => {
+                    s = s.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "");
+                    return s;
+                });
+
+                let precio_efectivo = await page.$eval('.ficha_precio_efectivo > h2', (s) => {
+                    if (!s) return 0;
+                    s = s.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").replace(/[$.]/g, '');
+                    return Number(s);
+                });
+
+                let precio_normal = await page.$eval('.ficha_precio_normal > h2', (s) => {
+                    if (!s) return 0;
+                    s = s.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").replace(/[$.]/g, '');
+                    return Number(s);
+                });
+
+                let precio_referencial = 0;
+                try {
+                    let precio_referencial = await page.$eval('.ficha_precio_referencial > h2', (s) => {
+                        if (!s) return 0;
+                        s = s.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").replace(/[$.]/g, '');
+                        return Number(s);
+                    });
+                } catch (e) {}
+
+
+                let prod = {
+                    sku,
+                    name,
+                    precio_efectivo,
+                    precio_normal,
+                    precio_referencial
+                }
+                console.log(prod);
+                data.push(prod);
             }
 
         }
