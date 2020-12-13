@@ -1,11 +1,10 @@
-const pageScraper = require('./pageScraper');
+const pageScraper = require('../scrapper/pageScraper');
 const fs = require('fs');
 async function scrapeAll(browserInstance) {
     let browser;
     try {
         browser = await browserInstance;
         let scrapedData = {};
-        //TODO: mongodb
         scrapedData['PCFLinks'] = await pageScraper.scraper(browser);
         await browser.close();
         fs.writeFile("data.json", JSON.stringify(scrapedData), 'utf8', function(err) {

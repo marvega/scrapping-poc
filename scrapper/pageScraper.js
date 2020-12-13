@@ -1,3 +1,6 @@
+const Producto = require('../model/producto');
+
+
 const scraperObject = {
     url: 'https://pcfactory.cl',
     async scraper(browser) {
@@ -67,13 +70,32 @@ const scraperObject = {
                 } catch (e) {}
 
 
-                let prod = {
+                let prod = new Producto({
                     sku,
                     name,
                     precio_efectivo,
                     precio_normal,
                     precio_referencial
+                })
+
+                try {
+
+                    await prod.save();
+
+                    // await prod.findOneAndUpdate({ sku: prod.sku }, {
+                    //     name: prod.name,
+                    //     precio_efectivo: prod.precio_efectivo,
+                    //     precio_normal: prod.precio_normal,
+                    //     precio_referencial: prod.precio_referencial
+                    // }, {
+                    //     upsert: true
+                    // });
+                } catch (err) {
+                    if (err.name === 'MongoError' && err.code === 11000) {
+                        console.log('Prod ya existe');
+                    }
                 }
+
                 console.log(prod);
                 data.push(prod);
             }
